@@ -261,7 +261,7 @@ def get_features(filename):
                 name = row[CONTRIBUTOR_NAME]
                 try:
                     zip_code = int(row[CONTRIBUTOR_ZIP])
-                except VAlueError:
+                except ValueError:
                     print("Couldn't convert %s to int" % row[CONTRIBUTOR_ZIP])
                     continue
                 try:
@@ -283,6 +283,16 @@ def get_features(filename):
                 data[i][10] = is_male(name)
 
     return data
+
+################################################
+#
+# Save data matrix to .dat file
+#
+################################################
+def save_features(filename, data):
+    with open(filename, 'w') as f:
+        for row in data:
+            print(row)
 
 if __name__ == "__main__":
     d = get_features("P00000001-IA.csv")
