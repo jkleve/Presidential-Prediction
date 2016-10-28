@@ -259,7 +259,11 @@ def get_features(filename):
             if i > 1: # skip first line
                 occupation = row[CONTRIBUTOR_OCCUPATION]
                 name = row[CONTRIBUTOR_NAME]
-                zip_code = row[CONTRIBUTOR_ZIP]
+                try:
+                    zip_code = int(row[CONTRIBUTOR_ZIP])
+                except VAlueError:
+                    print("Couldn't convert %s to int" % row[CONTRIBUTOR_ZIP])
+                    continue
                 try:
                     amount = float(row[CONTRIBUTION_AMOUNT])
                 except ValueError:
