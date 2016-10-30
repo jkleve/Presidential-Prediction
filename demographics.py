@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import sexmachine.detector as gender
 import gender_detector
+import time
 import sys
 
 NUM_FEATURES = 11
@@ -253,6 +254,19 @@ def save_features(filename, data):
             f.write("\n")
 
 if __name__ == "__main__":
+    t0 = time.time() # get start time
+
     d = get_features("P00000001-IA.csv")
+
+    # timing
+    t = time.time() - t0
+    hours = int(t / 3600)
+    t -= hours*3600
+    minutes = int(t / 60)
+    t -= minutes*60
+    t = int(t)
+    print("Time: %d hours %d minutes %d seconds" % (h, m, s)) 
+
+    # save the features
     save_features('IA.dat', d)
     sys.exit()
