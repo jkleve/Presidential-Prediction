@@ -252,6 +252,6 @@ def save_features(filename, data):
             f.write("\n")
 
 if __name__ == "__main__":
-    d = get_features("P00000001-IA_subset.csv")
-    save_features('test_output.dat', d)
+    d = get_features("P00000001-IA.csv")
+    save_features('IA.dat', d)
     sys.exit()
