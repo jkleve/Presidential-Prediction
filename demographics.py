@@ -190,6 +190,22 @@ def print_matrix(matrix):
         mat_string += row
     mat_string += "]"
 
+################################################
+#
+# Get candidate
+#
+################################################
+def get_candidate(candidate):
+    party = CANDIDATES[candidate]
+    #party = get_attr(CANDIDATES, candidate) 
+    if party == DEMOCRATIC:
+        return 1
+    elif party == REPUBLICAN:
+        return 2
+    elif party == LIBERTARIAN:
+        return 3
+    else:
+        return 4
 
 ################################################
 #
@@ -209,6 +225,7 @@ def get_features(filename):
         for row in reader:
 
             if i >= 0 and i < n: # skip first line
+                candidate = row[CANDIDATE_ID]
                 occupation = row[CONTRIBUTOR_OCCUPATION]
                 name = row[CONTRIBUTOR_NAME]
                 try:
@@ -232,7 +249,8 @@ def get_features(filename):
                 data[i][7] = is_greater(amount, 500.0)
                 data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
-                data[i][10] = is_male(name)
+                #data[i][10] = is_male(name)
+                data[i][10] = get_candidate(candidate)
             i += 1
             if i % n == 0:
                 print("%d%%" % int(float(i)/n*100))
