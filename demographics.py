@@ -139,25 +139,25 @@ def is_male(s):
         print("Failed to get first name. %s" % s)
     d1 = gender_detector.GenderDetector('us')
     g = d1.guess(s)
-    print('name is %s' % s)
-    print('first detector guessed %s' % g)
+    #print('name is %s' % s)
+    #print('first detector guessed %s' % g)
     
     if g == 'male':
-        print('returning male')
+        #print('returning male')
         return 1
     elif g == 'female':
-        print('returning female')
+        #print('returning female')
         return 0
 
     # if first (faster) detector can't guess it
     # try second detector
-    print('going to detector 2')
+    #print('going to detector 2')
     d2 = gender.Detector()
     g = d2.get_gender(s)
     if g == 'male':
-        print('male')
+        #print('male')
         return 1
-    print('female')
+    #print('female')
     return 0
 
 ################################################
