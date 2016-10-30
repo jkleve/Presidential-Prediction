@@ -260,11 +260,11 @@ if __name__ == "__main__":
 
     # timing
     t = time.time() - t0
-    hours = int(t / 3600)
-    t -= hours*3600
-    minutes = int(t / 60)
-    t -= minutes*60
-    t = int(t)
+    h = int(t / 3600)
+    t -= h*3600
+    m = int(t / 60)
+    t -= m*60
+    s = int(t)
     print("Time: %d hours %d minutes %d seconds" % (h, m, s)) 
 
     # save the features
