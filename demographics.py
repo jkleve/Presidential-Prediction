@@ -233,6 +233,8 @@ def get_features(filename):
                 data[i][9] = zip_code
                 data[i][10] = is_male(name)
             i += 1
+            if i % n == 0:
+                print("%d%%" % int(float(i)/n*100))
 
     return data
 
