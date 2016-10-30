@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import sexmachine.detector as gender
+import gender_detector
 import sys
 
 NUM_FEATURES = 11
@@ -48,109 +49,6 @@ FEC_FILES = {
     'iowa':  'demographics/P00000001-IA.csv'
 }
 
-# output (save) filenames
-DATA_FILES = {
-    'obama_2012':  'presidential_summaries/2012_obama_sum.dat',
-    'romney_2012': 'presidential_summaries/2012_romney_sum.dat',
-    'mccain_2008': 'presidential_summaries/2008_mccain_sum.dat',
-    'obama_2008':  'presidential_summaries/2008_obama_sum.dat'
-}
-
-# output (save) files included in 2012 election
-election_2012 = [
-    'obama_2012',
-    'romney_2012'
-]
-# output (save) files included in 2008 election
-election_2008 = [
-    'mccain_2008',
-    'obama_2008'
-]
-
-# the row the actual data starts in csv file
-data_line = 16
-
-# the columns where the wanted data is in the csv file for 2012
-year_2012_values = {
-    #ITEMIZED_CONTRIBUTIONS = 3
-    'TOTAL_INDVID_CONTRIBUTIONS': 5,
-    'TOTAL_CONTRIBUTIONS':        9,
-    'OPERATING_EXPENDITURES':     20
-}
-
-# the columns where the wanted data is in the csv file for 2008
-year_2008_values = {
-    'TOTAL_INDVID_CONTRIBUTIONS': 3,
-    'TOTAL_CONTRIBUTIONS':        7,
-    'OPERATING_EXPENDITURES':     18
-}
-
-
-################################################
-#
-# import summary helper to convert to float
-#  s: string to convert
-#
-################################################
-def money_string_to_float(s):
-    return float(s.strip('$').replace(',',''))
-
-################################################
-#
-# Get data from FEC csv file
-#  candidate: candidate to import. matches with
-#     FEC_FILES dictionary above
-#
-################################################
-def import_summary(candidate):
-    i = 0
-    data = {}
-
-    # get indices of where data will be in csv file
-    if candidate in election_2012:
-        v = year_2012_values
-        TOTAL_INDVID_CONTRIBUTIONS = v['TOTAL_INDVID_CONTRIBUTIONS']
-        TOTAL_CONTRIBUTIONS =        v['TOTAL_CONTRIBUTIONS']
-        OPERATING_EXPENDITURES =     v['OPERATING_EXPENDITURES']
-    elif candidate in election_2008:
-        v = year_2008_values
-        TOTAL_INDVID_CONTRIBUTIONS = v['TOTAL_INDVID_CONTRIBUTIONS']
-        TOTAL_CONTRIBUTIONS =        v['TOTAL_CONTRIBUTIONS']
-        OPERATING_EXPENDITURES =     v['OPERATING_EXPENDITURES']
-    else: # error handling
-        from inspect import currentframe, getframeinfo
-        frameinfo = getframeinfo(currentframe())
-        print("Error in %s on line %s" % (frameinfo.filename, frameinfo.lineno))
-
-    # read from csv file
-    with open(FEC_FILES[candidate]) as csv_file:
-        reader = csv.reader(csv_file, delimiter=',', quotechar='"')
-        for row in reader:
-            i += 1
-            # get data on data line, skip info lines
-            if i == data_line:
-                #data[ITEMIZED_CONTRIBUTIONS]     = money_string_to_float(row[ITEMIZED_CONTRIBUTIONS])
-                data[TOTAL_INDVID_CONTRIBUTIONS] = money_string_to_float(row[TOTAL_INDVID_CONTRIBUTIONS])
-                data[TOTAL_CONTRIBUTIONS]        = money_string_to_float(row[TOTAL_CONTRIBUTIONS])
-                data[OPERATING_EXPENDITURES]     = money_string_to_float(row[OPERATING_EXPENDITURES])
-
-    return data
-
-################################################
-#
-# Save imported data into my format as a .dat file.
-#  inverse of get_summary
-#   h: h or dictionary to save to file
-#   candidate: candidate to save data to. Use DATA_FILES
-#             dictionary above
-#
-################################################
-def save_summary(h, candidate):
-    filename = DATA_FILES[candidate]
-    with open(filename, 'w') as f:
-        for k,v in h.items():
-            f.write("%d,%s\n" % (k,v))
-
 ################################################
 #
 # Count number of samples in csv file
@@ -172,7 +70,9 @@ def count_samples(filename):
 def is_teacher(s):
     s = s.lower()
     if "teacher" in s:
+        #print("teacher in %s" % s)
         return 1
+    #print("teacher not in %s" % s)
     return 0
 
 ################################################
@@ -183,7 +83,9 @@ def is_teacher(s):
 def is_farmer(s):
     s = s.lower()
     if "farmer" in s:
+        #print("farmer in %s" % s)
         return 1
+    #print("farmer not in %s" % s)
     return 0
 
 ################################################
@@ -193,8 +95,10 @@ def is_farmer(s):
 ################################################
 def is_retired(s):
     s = s.lower()
-    if "retired" in s:
+    if "retired" in s:    
+        #print("retired in %s" % s)
         return 1
+    #print("retired not in %s" % s)
     return 0
 
 ################################################
@@ -205,7 +109,9 @@ def is_retired(s):
 def is_unemployed(s):
     s = s.lower()
     if "unemployed" in s:
+        #print("unemployed in %s" % s)
         return 1
+    #print("unemployed not in %s" % s)
     return 0
 
 ################################################
@@ -215,8 +121,10 @@ def is_unemployed(s):
 ################################################
 def is_student(s):
     s = s.lower()
-    if "unemployed" in s:
+    if "student" in s:
+        #print("student in %s" % s)
         return 1
+    #print("student not in %s" % s)
     return 0
 
 ################################################
@@ -225,10 +133,31 @@ def is_student(s):
 #
 ################################################
 def is_male(s):
-    s = s.lower().split(',')[1]
-    d = gender.Detector()
-    if d.get_gender(s) is 'male':
+    try:
+        s = s.lower().split(' ')[1]
+    except IndexError:
+        print("Failed to get first name. %s" % s)
+    d1 = gender_detector.GenderDetector('us')
+    g = d1.guess(s)
+    print('name is %s' % s)
+    print('first detector guessed %s' % g)
+    
+    if g == 'male':
+        print('returning male')
         return 1
+    elif g == 'female':
+        print('returning female')
+        return 0
+
+    # if first (faster) detector can't guess it
+    # try second detector
+    print('going to detector 2')
+    d2 = gender.Detector()
+    g = d2.get_gender(s)
+    if g == 'male':
+        print('male')
+        return 1
+    print('female')
     return 0
 
 ################################################
@@ -237,8 +166,29 @@ def is_male(s):
 #
 ################################################
 def is_greater(v1, v2):
-    if v1 > v2: return 1
+    if v1 > v2:
+        #print("%f > %f" % (v1,v2))
+        return 1
+    #print("%f < %f" % (v1,v2))
     return 0
+
+################################################
+#
+# Print 2D matrix
+#
+################################################
+def print_matrix(matrix):
+    s = matrix.shape
+    n = s[0]
+    m = s[1]
+    mat_string = "["
+    for i in range(0,n):
+        row = "["
+        for j in range(0,m):
+            row += (" %d " % matrix[i][j])
+        mat_string += row
+    mat_string += "]"
+
 
 ################################################
 #
@@ -247,16 +197,17 @@ def is_greater(v1, v2):
 ################################################
 def get_features(filename):
     n = count_samples(filename)
+    print("%d number of lines" % n)
     m = NUM_FEATURES
     data = np.zeros(shape=(n,m))
-    i = 0
+    print_matrix(data)
+    i = -1 
     
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
-            i += 1
 
-            if i > 1: # skip first line
+            if i >= 0 and i < n: # skip first line
                 occupation = row[CONTRIBUTOR_OCCUPATION]
                 name = row[CONTRIBUTOR_NAME]
                 try:
@@ -275,12 +226,14 @@ def get_features(filename):
                 data[i][2] = is_retired(occupation)
                 data[i][3] = is_unemployed(occupation)
                 data[i][4] = is_student(occupation)
-                data[i][5] = is_greater(amount, 100)
-                data[i][6] = is_greater(amount, 250)
-                data[i][7] = is_greater(amount, 500)
-                data[i][8] = is_greater(amount, 1000)
+                data[i][5] = is_greater(amount, 100.0)
+                data[i][6] = is_greater(amount, 250.0)
+                data[i][7] = is_greater(amount, 500.0)
+                data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
+                print('\n')
                 data[i][10] = is_male(name)
+            i += 1
 
     return data
 
@@ -290,21 +243,15 @@ def get_features(filename):
 #
 ################################################
 def save_features(filename, data):
+    n = data.shape[0] 
+    m = data.shape[1]
     with open(filename, 'w') as f:
-        for row in data:
-            print(row)
+        for i in range(0,n):
+            for j in range(0,m):
+                f.write("%d," % data[i][j])
+            f.write("\n")
 
 if __name__ == "__main__":
-    d = get_features("P00000001-IA.csv")
-    print(d)
+    d = get_features("P00000001-IA_subset.csv")
+    save_features('test_output.dat', d)
     sys.exit()
-    d = []
-    with open("P00000001-IA.csv") as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            if row[1] not in d:
-                d.append(row[1])
-                d.append(row[2])
-    for i in d:
-        print("%s" % (i))
-
