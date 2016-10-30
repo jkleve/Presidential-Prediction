@@ -216,7 +216,7 @@ def get_features(filename):
     n = count_samples(filename)
     print("%d number of lines" % n)
     m = NUM_FEATURES
-    data = np.zeros(shape=(n,m))
+    data = np.zeros(shape=(n,m+1)) # add 1 for y (output)
     print_matrix(data)
     i = -1 
     
@@ -249,8 +249,8 @@ def get_features(filename):
                 data[i][7] = is_greater(amount, 500.0)
                 data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
-                #data[i][10] = is_male(name)
-                data[i][10] = get_candidate(candidate)
+                data[i][10] = is_male(name)
+                data[i][11] = get_candidate(candidate)
             i += 1
             if i % n == 0:
                 print("%d%%" % int(float(i)/n*100))
