@@ -231,7 +231,6 @@ def get_features(filename):
                 data[i][7] = is_greater(amount, 500.0)
                 data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
-                print('\n')
                 data[i][10] = is_male(name)
             i += 1
 
