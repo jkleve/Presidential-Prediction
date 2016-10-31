@@ -359,32 +359,31 @@ def test(data, subset_size=10):
     return accuracy
 
 if __name__ == "__main__":
-    #t0 = time.time() # get start time
-    #d = get_features(FEC_FILES['iowa'])
-    #save_features('IA.dat', d)
+    t0 = time.time() # get start time
+    d = get_features(FEC_FILES['iowa'])
 
-    d = load_features("IA.dat")
-    print(test(d))
-    sys.exit()
-
-    X = d[:,0:NUM_FEATURES]
-    y = d[:,-1]
-    clf_tree = tree.DecisionTreeClassifier()
-    clf_tree.fit(X,y)
-    guess = clf_tree.predict([1,0,0,0,0,1,0,0,0,0])
-    
-    print(guess)
-    sys.exit()
-
-    ## timing
-    #t = time.time() - t0
-    #h = int(t / 3600)
-    #t -= h*3600
-    #m = int(t / 60)
-    #t -= m*60
-    #s = int(t)
-    #print("Time: %d hours %d minutes %d seconds" % (h, m, s)) 
+    # timing
+    t = time.time() - t0
+    h = int(t / 3600)
+    t -= h*3600
+    m = int(t / 60)
+    t -= m*60
+    s = int(t)
+    print("Time: %d hours %d minutes %d seconds" % (h, m, s)) 
 
     # save the features
     save_features('IA.dat', d)
     sys.exit()
+
+    #d = load_features("IA.dat")
+    #print(test(d))
+    #sys.exit()
+
+    #X = d[:,0:NUM_FEATURES]
+    #y = d[:,-1]
+    #clf_tree = tree.DecisionTreeClassifier()
+    #clf_tree.fit(X,y)
+    #guess = clf_tree.predict([1,0,0,0,0,1,0,0,0,0])
+    
+    #print(guess)
+    #sys.exit()
