@@ -139,7 +139,10 @@ def is_male(s):
     except IndexError:
         print("Failed to get first name. %s" % s)
     d1 = gender_detector.GenderDetector('us')
-    g = d1.guess(s)
+    try:
+        g = d1.guess(s)
+    except KeyError:
+	print("Failed to get gender of name %s" % s)
     #print('name is %s' % s)
     #print('first detector guessed %s' % g)
     
