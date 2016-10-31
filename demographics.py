@@ -6,7 +6,7 @@ import gender_detector
 import time
 import sys
 
-NUM_FEATURES = 10
+NUM_FEATURES = 11
 
 CANDIDATE_ID = 1
 CANDIDATE_NAME = 2
@@ -254,7 +254,7 @@ def get_features(filename):
                 data[i][7] = is_greater(amount, 500.0)
                 data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
-                #data[i][10] = is_male(name)
+                data[i][10] = is_male(name)
                 data[i][NUM_FEATURES] = get_candidate(candidate)
             i += 1
             if i % n == 0:
