@@ -436,7 +436,7 @@ def extract_one_features(data, f1):
     return data[:,[f1-1,-1]]
 
 if __name__ == "__main__":
-    #t0 = time.time() # get start time
+    t0 = time.time() # get start time
     #d = get_features(FEC_FILES['iowa'])
     #save_features('IA.dat', d)
 
@@ -455,13 +455,14 @@ if __name__ == "__main__":
     #print(test(d))
 
     accuracies = []
+    accuracies_string = []
     bins = np.arange(65,85,1)
     f1 = 2
     num_tests = 20
 
-    for i in range(0, num_tests): # get 20 tests
-        filename = "feature" + str(f1) + ".dat"
-        with open(filename, 'w') as f:
+    filename = "feature" + str(f1) + ".dat"
+    with open(filename, 'w') as f:
+        for i in range(0, num_tests): # get 20 tests
             f1 = 2
             f2, f3, f4 = get_three_random_nums(num_features)
             while f1 == f2 or f1 == f3 or f1 == f4 or f2 == f3 or f2 == f4 or f3 == f4:
@@ -469,12 +470,15 @@ if __name__ == "__main__":
             data = extract_four_features(d, f1, f2, f3, f4)
             accuracy = test(data, 4)
             accuracy = 100.0*accuracy
-            test_name = str(f1) + str(f2) + str(f3) + str(f4)
-            f.write("%s: %6.2f%%" % (test_name, accuracy))
+            test_name = "%2d,%2d,%2d,%2d" % (f1, f2, f3, f4)
+            f.write("%s: %5.2f%%\n" % (test_name, accuracy))
             accuracies.append(accuracy)
-    print(accuracies.sort())
+            s = "%s: %5.2f%%" % (test_name, accuracy)
+            accuracies_string.append(s)
+    print(accuracies_string)
+    print(t = time.time() - t0)
     gen_histogram(accuracies, bins)
-    
+
     sys.exit()
 
 
