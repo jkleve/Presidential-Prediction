@@ -6,7 +6,9 @@ import gender_detector
 import time
 import sys
 
-NUM_FEATURES = 10
+#NUM_FEATURES = 9
+#NUM_FEATURES = 13 # with gender
+#NUM_FEATURES = 5
 
 CANDIDATE_ID = 1
 CANDIDATE_NAME = 2
@@ -98,7 +100,7 @@ def is_farmer(s):
 ################################################
 def is_retired(s):
     s = s.lower()
-    if "retired" in s:    
+    if "retired" in s:
         #print("retired in %s" % s)
         return 1
     #print("retired not in %s" % s)
@@ -147,7 +149,7 @@ def is_male(s):
 	print("Failed to get gender of name %s" % s)
     #print('name is %s' % s)
     #print('first detector guessed %s' % g)
-    
+
     if g == 'male':
         #print('returning male')
         return 1
@@ -202,7 +204,7 @@ def print_matrix(matrix):
 ################################################
 def get_candidate(candidate):
     party = CANDIDATES[candidate]
-    #party = get_attr(CANDIDATES, candidate) 
+    #party = get_attr(CANDIDATES, candidate)
     if party == DEMOCRATIC:
         return 1
     elif party == REPUBLICAN:
@@ -217,14 +219,14 @@ def get_candidate(candidate):
 # Get all features from file
 #
 ################################################
-def get_features(filename):
+def get_features(filename, num_features):
     n = count_samples(filename)
     print("%d number of lines" % n)
-    m = NUM_FEATURES
+    m = num_features
     data = np.zeros(shape=(n,m+1)) # add 1 for y (output)
     print_matrix(data)
-    i = -1 
-    
+    i = -1
+
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
@@ -255,7 +257,7 @@ def get_features(filename):
                 data[i][8] = is_greater(amount, 1000.0)
                 data[i][9] = zip_code
                 #data[i][10] = is_male(name)
-                data[i][NUM_FEATURES] = get_candidate(candidate)
+                data[i][m] = get_candidate(candidate)
             i += 1
             if i % n == 0:
                 print("%d%%" % int(float(i)/n*100))
@@ -264,12 +266,12 @@ def get_features(filename):
 
 ################################################
 #
-# 
+#
 #
 ################################################
-def convert_to_nd_array(d):
+def convert_to_nd_array(d, num):
     n = len(d)
-    m = NUM_FEATURES
+    m = num
     data = np.zeros(shape=(n,m+1)) # add 1 for y (output)
     for s in range(0,n): # for each sample
         for f in range(0,m+1): # for each feature
@@ -287,23 +289,32 @@ def load_features(filename):
         for line in f:
             tmp = line.rstrip().split(',')[:-1]
             data.append(tmp)
-    data = convert_to_nd_array(data)
-    return data
+    num_features = len(data[0]) - 1
+    print data[0]
+    data = convert_to_nd_array(data, num_features)
+    return (num_features, data)
 
 ################################################
 #
 # Save data matrix to .dat file
 #
 ################################################
-def save_features(filename, data):
-    n = data.shape[0] 
-    m = data.shape[1]
+def save_features(filename, data, num_features):
+    one_feature = True
+    n = data.shape[0]
+    if num_features != 1:
+        m = data.shape[1]
+        one_feature = False
+
     with open(filename, 'w') as f:
         for i in range(0,n):
-            if data[i][NUM_FEATURES] != 0:
-                for j in range(0,m):
-                    f.write("%d," % data[i][j])
-                f.write("\n")
+            if one_feature:
+                f.write("%d\n" % data[i])
+            else:
+                if data[i][num_features] != 0: # TODO should I remove? could be useful data
+                    for j in range(0,m):
+                        f.write("%d," % data[i][j])
+                    f.write("\n")
 
 def get_test_sets(d, start, stop):
     train = None
@@ -329,13 +340,13 @@ def get_test_sets(d, start, stop):
 
 ################################################
 #
-# 
+#
 #
 ################################################
-def test(data, subset_size=10):
+def test(data, num_features, subset_size=10):
     accuracy = []
     correct = 0
-    attempts = 0 
+    attempts = 0
 
     samples = data.shape[0]
     test_size = int(float(samples)/subset_size) # TODO a little error in getting data subsets but...
@@ -344,11 +355,11 @@ def test(data, subset_size=10):
         start = i*test_size
         end = start + test_size
         train, test = get_test_sets(data, start, end)
-        X = train[:,0:NUM_FEATURES]
+        X = train[:,0:num_features]
         y = train[:,-1]
         clf_tree = tree.DecisionTreeClassifier()
         clf_tree.fit(X,y)
-        test_data = test[:,0:NUM_FEATURES]
+        test_data = test[:,0:num_features]
         for i in range(0, test.shape[0]):
             guess = clf_tree.predict(test_data[i])
             if guess == test[i,-1]:
@@ -358,13 +369,55 @@ def test(data, subset_size=10):
     accuracy = sum(accuracy) / len(accuracy)
     return accuracy
 
+################################################
+#
+#
+#
+################################################
+def get_out_of_bag_error(data, num_features, feature):
+    accuracy_with_feature = test(data, num_features)
+
+    d1 = d2 = None
+    n = data.shape[1]
+    b = [i for i in range(0,feature-1)]
+    e = [i for i in range(feature,n)]
+
+    if len(b) > 0:
+        d1 = data[:,b]
+    if len(e) > 0:
+        d2 = data[:,e]
+
+    if d1 is not None and d2 is not None:
+        data = np.column_stack((d1,d2))
+    elif d1 is not None:
+        data = d1
+    else:
+        data = d2
+
+    #save_features("data_testing_wo_feature.dat", data, NUM_FEATURES-1)
+    #sys.exit()
+    accuracy_without = test(data, num_features-1)
+
+    return (accuracy_with_feature, accuracy_without)
+
 if __name__ == "__main__":
     #t0 = time.time() # get start time
     #d = get_features(FEC_FILES['iowa'])
     #save_features('IA.dat', d)
 
-    d = load_features("IA.dat")
-    print(test(d))
+    #d = load_features("IA_gender.dat")
+    num_features, d = load_features("IA.dat")
+    #save_features("data_after_load.dat", d, NUM_FEATURES)
+
+    with open("accuracies1.dat", 'w') as f:
+        f.write("            w/ feature   w/o feature\n")
+        for i in range(1, num_features+1):
+            with_feature, wo_feature = get_out_of_bag_error(d, num_features, i)
+            with_f = 100.0*with_feature
+            wo_f = 100.0*wo_feature
+            f.write("feature %2d: %6.2f%% %11.2f%%\n" % (i, with_f, wo_f))
+
+    #print(test(d))
     sys.exit()
 
     X = d[:,0:NUM_FEATURES]
@@ -372,7 +425,7 @@ if __name__ == "__main__":
     clf_tree = tree.DecisionTreeClassifier()
     clf_tree.fit(X,y)
     guess = clf_tree.predict([1,0,0,0,0,1,0,0,0,0])
-    
+
     print(guess)
     sys.exit()
 
@@ -383,8 +436,8 @@ if __name__ == "__main__":
     #m = int(t / 60)
     #t -= m*60
     #s = int(t)
-    #print("Time: %d hours %d minutes %d seconds" % (h, m, s)) 
+    #print("Time: %d hours %d minutes %d seconds" % (h, m, s))
 
     # save the features
-    save_features('IA.dat', d)
+    save_features('IA.dat', d, NUM_FEATURES)
     sys.exit()
