@@ -457,13 +457,12 @@ if __name__ == "__main__":
     accuracies = []
     accuracies_string = []
     bins = np.arange(65,85,1)
-    f1 = 2
+    f1 = 12
     num_tests = 20
 
     filename = "feature" + str(f1) + ".dat"
     with open(filename, 'w') as f:
         for i in range(0, num_tests): # get 20 tests
-            f1 = 2
             f2, f3, f4 = get_three_random_nums(num_features)
             while f1 == f2 or f1 == f3 or f1 == f4 or f2 == f3 or f2 == f4 or f3 == f4:
                  f2, f3, f4 = get_three_random_nums(num_features)
@@ -476,7 +475,7 @@ if __name__ == "__main__":
             s = "%s: %5.2f%%" % (test_name, accuracy)
             accuracies_string.append(s)
     print(accuracies_string)
-    print(t = time.time() - t0)
+    print(time.time() - t0)
     gen_histogram(accuracies, bins)
 
     sys.exit()
