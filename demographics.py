@@ -1,10 +1,12 @@
 import csv
 import numpy as np
 import sexmachine.detector as gender
-from sklearn import tree
+from sklearn import tree, neural_network
 import gender_detector
+import random
 import time
 import sys
+from demo_histograms import gen_histogram
 
 #NUM_FEATURES = 9
 #NUM_FEATURES = 13 # with gender
@@ -290,7 +292,6 @@ def load_features(filename):
             tmp = line.rstrip().split(',')[:-1]
             data.append(tmp)
     num_features = len(data[0]) - 1
-    print data[0]
     data = convert_to_nd_array(data, num_features)
     return (num_features, data)
 
@@ -311,10 +312,10 @@ def save_features(filename, data, num_features):
             if one_feature:
                 f.write("%d\n" % data[i])
             else:
-                if data[i][num_features] != 0: # TODO should I remove? could be useful data
-                    for j in range(0,m):
-                        f.write("%d," % data[i][j])
-                    f.write("\n")
+                #if data[i][num_features] != 0: # TODO should I remove? could be useful data
+                for j in range(0,m):
+                    f.write("%d," % data[i][j])
+                f.write("\n")
 
 def get_test_sets(d, start, stop):
     train = None
@@ -357,11 +358,17 @@ def test(data, num_features, subset_size=10):
         train, test = get_test_sets(data, start, end)
         X = train[:,0:num_features]
         y = train[:,-1]
+        #save_features("x.dat", X, 1)
+        #save_features("y.dat", y, 1)
+        #sys.exit()
         clf_tree = tree.DecisionTreeClassifier()
         clf_tree.fit(X,y)
+        #nn = neural_network.MLPClassifier()
+        #nn.fit(X,y)
         test_data = test[:,0:num_features]
         for i in range(0, test.shape[0]):
             guess = clf_tree.predict(test_data[i])
+            #guess = nn.predict(test_data[i])
             if guess == test[i,-1]:
                 correct += 1
             attempts += 1
@@ -400,35 +407,101 @@ def get_out_of_bag_error(data, num_features, feature):
 
     return (accuracy_with_feature, accuracy_without)
 
+def get_three_random_nums(num_features):
+    f1 = random.randint(1,num_features)
+    f2 = random.randint(1,num_features)
+    f3 = random.randint(1,num_features)
+    return f1, f2, f3
+
+def get_four_random_nums(num_features):
+    f1 = random.randint(1,num_features)
+    f2 = random.randint(1,num_features)
+    f3 = random.randint(1,num_features)
+    f4 = random.randint(1,num_features)
+    return f1, f2, f3, f4
+
+def get_four_features(num_features):
+    f1, f2, f3, f4 = get_four_random_nums(num_features)
+    while f1 == f2 or f1 == f3 or f1 == f4 or f2 == f3 or f2 == f4 or f3 == f4:
+        f1, f2, f3, f4 = get_four_random_nums(num_features)
+    return f1, f2, f3, f4
+
+def extract_four_features(data, f1, f2, f3, f4):
+    return data[:,[f1-1,f2-1,f3-1,f4-1,-1]]
+
+def extract_three_features(data, f1, f2, f3):
+    return data[:,[f1-1,f2-1,f3-1,-1]]
+
+def extract_one_features(data, f1):
+    return data[:,[f1-1,-1]]
+
 if __name__ == "__main__":
     #t0 = time.time() # get start time
     #d = get_features(FEC_FILES['iowa'])
     #save_features('IA.dat', d)
 
-    #d = load_features("IA_gender.dat")
-    num_features, d = load_features("IA.dat")
+    num_features, d = load_features("IA_gender.dat")
+    #num_features, d = load_features("IA-test.dat")
+    #num_features, d = load_features("IA.dat")
     #save_features("data_after_load.dat", d, NUM_FEATURES)
 
-    with open("accuracies1.dat", 'w') as f:
-        f.write("            w/ feature   w/o feature\n")
-        for i in range(1, num_features+1):
-            with_feature, wo_feature = get_out_of_bag_error(d, num_features, i)
-            with_f = 100.0*with_feature
-            wo_f = 100.0*wo_feature
-            f.write("feature %2d: %6.2f%% %11.2f%%\n" % (i, with_f, wo_f))
+    # get out of bag error and save to accuracies.dat
+    #with open("accuracies1.dat", 'w') as f:
+    #    for i in range(1, num_features+1):
+    #        with_feature, wo_feature = get_out_of_bag_error(d, num_features, i)
+    #        wo_f = 100.0*wo_feature
+    #        f.write("feature %2d: %6.2f%%\n" % (i, wo_f))
 
     #print(test(d))
+
+    accuracies = []
+    bins = np.arange(65,85,1)
+    f1 = 2
+    num_tests = 20
+
+    for i in range(0, num_tests): # get 20 tests
+        filename = "feature" + str(f1) + ".dat"
+        with open(filename, 'w') as f:
+            f1 = 2
+            f2, f3, f4 = get_three_random_nums(num_features)
+            while f1 == f2 or f1 == f3 or f1 == f4 or f2 == f3 or f2 == f4 or f3 == f4:
+                 f2, f3, f4 = get_three_random_nums(num_features)
+            data = extract_four_features(d, f1, f2, f3, f4)
+            accuracy = test(data, 4)
+            accuracy = 100.0*accuracy
+            test_name = str(f1) + str(f2) + str(f3) + str(f4)
+            f.write("%s: %6.2f%%" % (test_name, accuracy))
+            accuracies.append(accuracy)
+    print(accuracies.sort())
+    gen_histogram(accuracies, bins)
+    
     sys.exit()
 
-    X = d[:,0:NUM_FEATURES]
-    y = d[:,-1]
-    clf_tree = tree.DecisionTreeClassifier()
-    clf_tree.fit(X,y)
-    guess = clf_tree.predict([1,0,0,0,0,1,0,0,0,0])
 
-    print(guess)
+
+
+
+
+
+
+
+
+
+    f1, f2, f3, f4 = get_four_features(num_features)
+    f1 = 1
+    f2 = 2
+    f3 = 3
+    f4 = 4
+    #data = extract_one_features(d, f1)
+    data = extract_three_features(d, f1, f2, f3)
+    accuracy = test(data, 3)
+    accuracy = 100.0*accuracy
+    filename = str(f1) + str(f2) + str(f3)
+    #with open(filename, 'w') as f:
+    #    f.write("features %d: accuracy %6.2f%%\n" % \
+    #            (f1, accuracy))
+    print(accuracy)
     sys.exit()
-
     ## timing
     #t = time.time() - t0
     #h = int(t / 3600)
