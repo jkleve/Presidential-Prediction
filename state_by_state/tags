@@ -1,0 +1,80 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BeautifulSoup	scrape_fec.py	/^from bs4 import BeautifulSoup$/;"	i
+CANDIDATES	predict_state.py	/^CANDIDATES = {$/;"	v
+CANDIDATE_ID	get_candidates.py	/^CANDIDATE_ID = 1$/;"	v
+CANDIDATE_ID	predict_state.py	/^CANDIDATE_ID = 1$/;"	v
+CANDIDATE_NAME	get_candidates.py	/^CANDIDATE_NAME = 2$/;"	v
+CANDIDATE_NAME	predict_state.py	/^CANDIDATE_NAME = 2$/;"	v
+CONTRIBUTION_AMOUNT	predict_state.py	/^CONTRIBUTION_AMOUNT = 9$/;"	v
+CONTRIBUTION_DATE	predict_state.py	/^CONTRIBUTION_DATE = 10$/;"	v
+CONTRIBUTOR_CITY	predict_state.py	/^CONTRIBUTOR_CITY = 4$/;"	v
+CONTRIBUTOR_EMPLOYER	predict_state.py	/^CONTRIBUTOR_EMPLOYER = 7$/;"	v
+CONTRIBUTOR_NAME	predict_state.py	/^CONTRIBUTOR_NAME = 3$/;"	v
+CONTRIBUTOR_OCCUPATION	predict_state.py	/^CONTRIBUTOR_OCCUPATION = 8$/;"	v
+CONTRIBUTOR_STATE	predict_state.py	/^CONTRIBUTOR_STATE = 5$/;"	v
+CONTRIBUTOR_ZIP	predict_state.py	/^CONTRIBUTOR_ZIP = 6$/;"	v
+DEBUG	predict_state.py	/^DEBUG = 0$/;"	v
+DEMOCRATIC	predict_state.py	/^DEMOCRATIC = 1$/;"	v
+FTP	scrape_fec.py	/^from ftplib import FTP$/;"	i
+GENERAL_ELECTION_CANDIDATES	predict_state.py	/^GENERAL_ELECTION_CANDIDATES = {$/;"	v
+GREEN	predict_state.py	/^GREEN = 5$/;"	v
+GaussianNB	predict_state.py	/^from sklearn.naive_bayes import GaussianNB$/;"	i
+LIBERTARIAN	predict_state.py	/^LIBERTARIAN = 3$/;"	v
+OTHER	predict_state.py	/^OTHER = 4$/;"	v
+REPUBLICAN	predict_state.py	/^REPUBLICAN = 2$/;"	v
+States	predict_state.py	/^from States import States$/;"	i
+TEST	handle_csv_files.py	/^TEST = 0$/;"	v
+X	predict_state.py	/^        X = load_old_state_data(k)$/;"	v
+a	scrape_fec.py	/^    a = tag.find("a")$/;"	v
+add_row_to_array	predict_state.py	/^def add_row_to_array(a, b):$/;"	f
+compare_features_to_outputs	predict_state.py	/^def compare_features_to_outputs():$/;"	f
+csv	get_candidates.py	/^import csv$/;"	i
+csv	predict_state.py	/^import csv$/;"	i
+d	get_candidates.py	/^    d = get_candidates("csvs_2012\/P00000001-IA.csv")$/;"	v
+data	predict_state.py	/^            data = np.append(data, X)$/;"	v
+data	predict_state.py	/^            data = np.vstack((data, X))$/;"	v
+data	predict_state.py	/^    data = np.empty(shape=(0,0))$/;"	v
+dest	scrape_fec.py	/^    dest = link.split('\/')[-1]$/;"	v
+download_file	scrape_fec.py	/^def download_file(url, dest):$/;"	f
+ftp	scrape_fec.py	/^    ftp = FTP(link)$/;"	v
+get_candidate_party	predict_state.py	/^def get_candidate_party(candidate):$/;"	f
+get_candidates	get_candidates.py	/^def get_candidates(filename):$/;"	f
+get_features_for_sample	predict_state.py	/^def get_features_for_sample(filename, year):$/;"	f
+get_output_for_state	predict_state.py	/^def get_output_for_state(state):$/;"	f
+get_test_sets	predict_state.py	/^def get_test_sets(d, start, stop):$/;"	f
+getpass	scrape_fec.py	/^from getpass import getpass$/;"	i
+link	scrape_fec.py	/^    link = a.attrs['href'].strip()$/;"	v
+load_all_state_data	predict_state.py	/^def load_all_state_data(states):$/;"	f
+load_features	predict_state.py	/^def load_features(filename):$/;"	f
+load_new_state_data	predict_state.py	/^def load_new_state_data(state):$/;"	f
+load_old_state_data	predict_state.py	/^def load_old_state_data(state):$/;"	f
+move_zips	handle_csv_files.py	/^def move_zips(year):$/;"	f
+neural_network	predict_state.py	/^from sklearn import tree, neural_network$/;"	i
+np	predict_state.py	/^import numpy as np$/;"	i
+os	handle_csv_files.py	/^import os$/;"	i
+os	scrape_fec.py	/^import os$/;"	i
+predict_state	predict_state.py	/^def predict_state(state):$/;"	f
+r	scrape_fec.py	/^r = requests.get(site)$/;"	v
+random	predict_state.py	/^import random$/;"	i
+requests	scrape_fec.py	/^import requests$/;"	i
+save_features	predict_state.py	/^def save_features(filename, data, num_features):$/;"	f
+site	scrape_fec.py	/^site = "http:\/\/www.fec.gov\/disclosurep\/PDownload.do"$/;"	v
+soup	scrape_fec.py	/^soup = BeautifulSoup(r.content)$/;"	v
+states	scrape_fec.py	/^states = soup.find_all("td", {"class": "table-content-center"})$/;"	v
+sys	get_candidates.py	/^import sys$/;"	i
+sys	handle_csv_files.py	/^import sys$/;"	i
+sys	predict_state.py	/^import sys$/;"	i
+sys	scrape_fec.py	/^import sys$/;"	i
+test_state	predict_state.py	/^def test_state(state):$/;"	f
+time	predict_state.py	/^import time$/;"	i
+time	scrape_fec.py	/^import time$/;"	i
+tree	predict_state.py	/^from sklearn import tree, neural_network$/;"	i
+unzip_files	handle_csv_files.py	/^def unzip_files(year):$/;"	f
+urllib	scrape_fec.py	/^import urllib$/;"	i
+urllib2	scrape_fec.py	/^import urllib2$/;"	i
+year	handle_csv_files.py	/^    year = 2008$/;"	v
